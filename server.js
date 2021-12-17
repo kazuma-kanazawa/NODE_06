@@ -21,7 +21,16 @@ app.get('/', (req,res) => {
 
 io.on('connection', (socket) => {
     socket.on('message', (data) => {
+        if ( user.token) return
+        user.token = uuidv4()
+        users[socket.id] = user
+        let data = {
+            user: user,
+            users: users,
+        }
         console.log(data)
-        io.emit('message', data)
+        //io.emit('message', data)
+        socket.emit('message', data)
+        socket.broadcast.emit('user_joined', data)
     })
 })
