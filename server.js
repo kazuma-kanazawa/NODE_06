@@ -33,6 +33,11 @@ io.on('connection', (socket) => {
         socket.emit('message', data)
         socket.broadcast.emit('user_joined', data)
     })
+    socket.on('message', (data) => {
+        console.log(data)
+        data.datetime = Date.now()
+        io.emit('message', data)
+    })
 })
 
 http.listen(port, host, () => {
