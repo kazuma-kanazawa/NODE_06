@@ -34,3 +34,7 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('user_joined', data)
     })
 })
+
+http.listen(port, host, () => {
+    console.log('http://' + host + ':' + port)
+})

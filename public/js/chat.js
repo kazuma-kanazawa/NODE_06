@@ -122,4 +122,23 @@ $(() => {
         }
     })
 
+    $('#send').on('click', () => {
+        socket.emit('message', {
+            message: message.val(),
+            user: user,
+        })
+    })
+
+    socket.on('logined', (data) => {
+        user = data.user
+        users = data.users
+        userName.text(user.name)
+        updateUserList()
+    })
+    socket.on('user_joined', (data) => {
+        users = data.users
+        let message = data.user.name + 'が入室しました'
+        addMessage(message)
+        updateUserList()
+    })
 })
