@@ -122,6 +122,13 @@ $(() => {
         }
     })
 
+    socket.on('user_left', (data) => {
+        users = deta.users
+        let message = data.user.name + 'が退出しました'
+        addMessage(message)
+        updateUserList()
+    })
+
     $('#send').on('click', () => {
         socket.emit('message', {
             message: message.val(),

@@ -37,6 +37,17 @@ io.on('connection', (socket) => {
         data.datetime = Date.now()
         io.emit('message', data)
     })
+    const logout = (socket) => {
+        const user = users[socket.id]
+        delete users[socket.id]
+        socket.broadcast.emit('user_left',{
+            user: user,
+            users: users,
+        })
+    }
+    socket.on('logout', () => {
+        logout(socket)
+    })
 })
 
 http.listen(port, host, () => {
