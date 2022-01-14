@@ -52,6 +52,12 @@ io.on('connection', (socket) => {
         io.emit('load_stamp', data)
     })
 
+    socket.on('upload_image', (data) => {
+        data.datetime = Data.now()
+        console.log(data)
+        io.emit('load_image', data)
+    })
+
     const logout = (socket) => {
         //ユーザ一覧からIDでユーザ取得
         const user = users[socket.id]
