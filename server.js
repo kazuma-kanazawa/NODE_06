@@ -20,7 +20,7 @@ app.get('/', (req,res) => {
 })
 
 io.on('connection', (socket) => {
-    socket.on('message', (data) => {
+    socket.on('message', (user) => {
         if ( user.token) return
         user.token = uuidv4()
         users[socket.id] = user
@@ -29,8 +29,7 @@ io.on('connection', (socket) => {
             users: users,
         }
         console.log(data)
-        //io.emit('message', data)
-        socket.emit('message', data)
+        socket.emit('logined', data)
         socket.broadcast.emit('user_joined', data)
     })
     socket.on('message', (data) => {
