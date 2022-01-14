@@ -113,29 +113,49 @@ $(() => {
 
     let socket = io.connect(url)
 
+    //ログイン処理
     $('#login').on('click', () => {
         let name = inputName.val()
         let icon = $('input[name=icon]:checked').val()
-        if (name && icon ){
+        if (name && icon) {
             loginArea.hide()
             chatArea.fadeIn(FADE_TIME)
+            //サーバに送信
+            socket.emit('auth', {
+                name: name,
+                icon: icon,
+            })
         }
     })
+    //ログアウト処理
+    $('#logout').on('click', () => {
+        socket.emit('logout')
+        user = {}
 
+        chatArea.hide()
+        loginArea.fadeIn(FADE_TIME)
+    })
+    //ログアウト通知
     socket.on('user_left', (data) => {
-        users = deta.users
+        users = data.users
         let message = data.user.name + 'が退出しました'
         addMessage(message)
         updateUserList()
     })
 
+    //メッセージ送信
     $('#send').on('click', () => {
         socket.emit('message', {
             message: message.val(),
             user: user,
         })
+        message.val() = ''
     })
-
+    //メッセージ受信
+    socket.on('message', (data) => {
+        createChatMessage(data)
+    })
+    //受信
     socket.on('logined', (data) => {
         user = data.user
         users = data.users
@@ -147,5 +167,31 @@ $(() => {
         let message = data.user.name + 'が入室しました'
         addMessage(message)
         updateUserList()
+    })
+
+    $('.stamp').on('click', () => {
+        stampList.toggle()
+    })
+    $('.uploadstamp').on('click', (event) => {
+        const image = new Image()
+        image.src = $(event.target).attr('src')
+        const mine_type = 'image/png'
+
+        image.onload = (e) => {
+            const canvas = document.createElement('canvas')
+            canvas.width = image.naturalWidth
+            canvas.height = image.naturalHeight
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(image, 0, 0)
+            const base64 = canvas.toDataURL(mine_type)
+            const data = {user: user, image: base64}
+
+            socket.emit('upload_stamp', data)
+
+            
+        }
+    })
+    socket.on('load_stamp', (data) => {
+        createChatImage(data, { width: STAMP_WIDTH })
     })
 })
